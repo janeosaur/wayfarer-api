@@ -4,11 +4,13 @@
 var express = require('express'),
     mongoose = require('mongoose'),
     bodyParser = require('body-parser');
+    cors = require('cors');
 
 var db = require('./models');
 var app = express(),
     router = express.Router();
 
+app.use(cors());
 // set port to env or 3000
 var port = process.env.PORT || 3000;
 
@@ -17,7 +19,7 @@ var port = process.env.PORT || 3000;
 var dbUser = process.env.MLAB_DBUSER
 var dbPassword = process.env.MLAB_DBPASSWORD
 var databaseUrl = 'mongodb://test:testing@ds137891.mlab.com:37891/wayfarer-api'
-mongoose.connect(databaseUrl, 'mongodb://localhost/wayfarer-api')
+mongoose.connect(databaseUrl || 'mongodb://localhost/wayfarer-api')
 
 
 //config API to use bodyParser and look for JSON in req.body
