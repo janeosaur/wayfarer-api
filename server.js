@@ -191,4 +191,6 @@ router.route('/cities/:name')
 
 
 //start server
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3000, function() {
+  console.log(`api running on port ${port}`);
+});
