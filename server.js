@@ -10,7 +10,7 @@ var app = express(),
     router = express.Router();
 
 // set port to env or 3000
-var port = process.env.API_PORT || 3001;
+var port = process.env.PORT || 3000;
 
 //db config
 //ADD YOUR INFO HERE!
