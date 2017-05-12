@@ -17,7 +17,7 @@ var port = process.env.PORT || 3000;
 var dbUser = process.env.MLAB_DBUSER
 var dbPassword = process.env.MLAB_DBPASSWORD
 var databaseUrl = 'mongodb://' + dbUser + ':' + dbPassword + '@ds133331.mlab.com:33331/mywayfarer'
-// mongoose.connect(databaseUrl)
+mongoose.connect(databaseUrl)
 
 
 //config API to use bodyParser and look for JSON in req.body
