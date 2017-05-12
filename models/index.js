@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-mongoose.connect( process.env.MONGODB_URI || "mongodb://localhost/wayfarerapi");
+// mongoose.connect( process.env.MONGODB_URI || "mongodb://localhost/wayfarerapi");
 
 mongoose.Promise = global.Promise;
 
