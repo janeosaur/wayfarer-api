@@ -14,8 +14,8 @@ var db = require('./models');
 //ADD YOUR INFO HERE!
 var dbUser = process.env.MLAB_DBUSER
 var dbPassword = process.env.MLAB_DBPASSWORD
-var databaseUrl = 'mongodb://' + dbUser + ':' + dbPassword + '@ds137891.mlab.com:37891/wayfarer-api'
-mongoose.connect(databaseUrl || 'mongodb://localhost/wayfarer-api')
+var databaseUrl = 'mongodb://heroku_s60k8q5c:66bnmmbbie557348v8mmo4427t@ds139761.mlab.com:39761/heroku_s60k8q5c'
+mongoose.createConnection(databaseUrl ||'mongodb://localhost/wayfarer-api')
 
 //config API to use bodyParser and look for JSON in req.body
 app.use(bodyParser.urlencoded({extended: true }));
