@@ -1,23 +1,21 @@
 'use strict'
 
 //import dependencies
-var express = require('express'),
-    mongoose = require('mongoose'),
-    bodyParser = require('body-parser');
-
+var express = require('express');
+var app = express();
+var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
+var controllers = require('./controllers');
 var db = require('./models');
-var app = express(),
-    router = express.Router();
 
-// set port to env or 3000
-var port = process.env.PORT || 3000;
+// router = express.Router();
 
 //db config
 //ADD YOUR INFO HERE!
 var dbUser = process.env.MLAB_DBUSER
 var dbPassword = process.env.MLAB_DBPASSWORD
-var databaseUrl = 'mongodb://' + dbUser + ':' + dbPassword + '@ds133331.mlab.com:33331/mywayfarer'
-mongoose.connect(databaseUrl)
+var databaseUrl = 'mongodb://' + dbUser + ':' + dbPassword + '@ds137891.mlab.com:37891/wayfarer-api'
+mongoose.connect(databaseUrl || 'mongodb://localhost/wayfarer-api')
 
 //config API to use bodyParser and look for JSON in req.body
 app.use(bodyParser.urlencoded({extended: true }));
@@ -29,96 +27,26 @@ app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Methods', 'GET,HEAD,OPTIONS,POST,PUT,DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers');
-
   //Remove caching
   res.setHeader('Cache-Control', 'no-cache');
   next();
-});  //  app.use(function
-
-//use router config when we call /API
-app.use('/api', router);
-
-//set route path and init API
-app.get('/api', function(req,res) {
-  res.json({message: 'API Initialized for Wayfarer !!!'});
 });
 
-// // delete all comments
-// app.get('/api/comments/nuke', function(req,res){
-//   db.Comment.remove(function(err,succ){
-//   res.json(succ);
-//   });
-// });
+////////////
+// ROUTES //
+////////////
 
-// get all comments
-app.get('/api/comments', function(req,res) {
-  db.Comment.find(function(err, comments) {
-    if (err) {
-      res.send(err);
-    }
-    res.json(comments);
-  });
-})
+app.get('/api', controllers.api.index);
+app.get('/api/comments/nuke', controllers.comments.destroyAll);
+app.get('/api/comments', controllers.comments.index);
+app.post('/api/comments', controllers.comments.create);
+app.get('/api/comments/:id', controllers.comments.showOne);
+app.delete('/api/comments/:id', controllers.comments.destroy);
+app.put('/api/comments/:id', controllers.comments.update);
+app.get('/api/cities', controllers.cities.index);
+app.get('/api/cities/:name', controllers.cities.showOne);
 
-// create a comment
-app.post('/api/comments', function(req,res) {
-  var post = new db.Comment();
-  post.name = req.body.name;
-  post.title = req.body.title;
-  post.text = req.body.text;
-  post.city = req.body.city;
-  post.date = Date.now();
-  post.save();
-  db.City.findOne({name: post.city}, function(err, foundCity) {
-    if (err) {
-      console.log('post error at find one city');
-    } else {
-      console.log(foundCity.comments)
-      console.log(post._id)
-      foundCity.comments.push(post._id);
-      foundCity.save();
-      res.json(foundCity);
-    }
-  })
-})
 
-// get one comment by id
-app.get('/api/comments/:id', function(req,res) {
-  db.Comment.findById(req.params.id, function(err, comments) {
-    if (err) {
-      res.send(err);
-    }
-    res.json(comments);
-  });
-})
-
-// delete one comment by id
-app.delete('/api/comments/:id', function(req,res) {
-  db.Comment.remove({_id:req.params.id}, function(err, comment) {
-    if (err) {
-      res.send(err);
-    } res.json({message: 'comment has been deleted'})
-  })
-})
-
-// update one comment by id
-app.put('/api/comments/:id', function(req, res) {
-  db.Comment.findById(req.params.id, function(err, comment) {
-    if (err) {
-      res.send(err);
-    }
-    (req.body.name) ? comment.name = req.body.name : null;
-    (req.body.title) ? comment.title = req.body.title : null;
-    (req.body.text) ? comment.text = req.body.text : null;
-    (req.body.date) ? comment.date = req.body.date : null;
-    comment.save(function(err) {
-      if (err) {
-        res.send(err)
-      }
-      res.json({message: 'comment has been updated'})
-    })
-  })
-})
 
 // get comments from one username
 app.get('/api/profile/comments/:name', function(req, res) {
@@ -130,20 +58,8 @@ app.get('/api/profile/comments/:name', function(req, res) {
   });
 })
 
-// get all cities
-app.get('/api/cities', function(req, res) {
-  db.City.find({})
-    .populate('comments')
-    .exec(function(err, cities) {
-      if (err) {
-        res.send(err);
-      }
-      res.json(cities);
-    });
-  })
-
-// // get specific city info
-// router.route('/cities/:id')
+// // get specific city info - interferes with /api/cities/:name
+// router.route('/api/cities/:id')
 //   .get(function(req, res) {
 //     db.City.findById(req.params.id, function(err, city) {
 //       if (err) {
@@ -153,20 +69,7 @@ app.get('/api/cities', function(req, res) {
 //     });
 //   })
 
-// get one city by name
-app.get('/api/cities/:name', function(req, res) {
-  db.City.findOne({name: req.params.name})
-  .populate('comments')
-  .exec(function(err, city) {
-    if (err) {
-      res.send(err);
-    }
-    res.json(city);
-  });
-})
-
-
 //start server
 app.listen(process.env.PORT || 3000, function() {
-  console.log(`api running on port ${port}`);
+  console.log(`api running on port 3000`);
 });
